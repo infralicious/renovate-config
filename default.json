@@ -1,0 +1,41 @@
+{
+  "$schema": "https://docs.renovatebot.com/renovate-schema.json",
+  "extends": [
+    "config:best-practices",
+    ":separateMultipleMajorReleases",
+    ":semanticCommits",
+    ":semanticCommitTypeAll(ci)",
+    ":enablePreCommit",
+    "schedule:daily"
+  ],
+  "timezone": "America/Los_Angeles",
+  "commitMessageSuffix": " in {{packageFile}}",
+  "dependencyDashboardAutoclose": false,
+  "configMigration": true,
+  "labels": [
+    "dependencies",
+    "{{datasource}}",
+    "{{updateType}}"
+  ],
+  "packageRules": [
+    {
+      "matchManagers": [
+        "pre-commit"
+      ],
+      "groupName": "pre-commit",
+      "schedule": [
+        "after 4am on monday"
+      ]
+    },
+  ],
+  "osvVulnerabilityAlerts": true,
+  "vulnerabilityAlerts": {
+    "enabled": true,
+    "assignees": [
+      "@nitrocode"
+    ],
+    "labels": [
+      "security"
+    ]
+  }
+}
