@@ -1,0 +1,44 @@
+# Central Renovate runner for the infralicious org.
+# This workflow lives in infralicious/renovate-config only.
+# That repo has no workflows folder today, so no clash exists.
+# It opens PRs in target repos. It adds no file to them.
+name: Renovate
+
+on:
+  schedule:
+    # Run at 07:00 UTC each Monday.
+    # That time is 02:00 CDT and 01:00 CST.
+    # Both times fall before 3am in Chicago.
+    - cron: "0 7 * * 1"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: renovate
+  cancel-in-progress: false
+
+jobs:
+  renovate:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Create app token
+        id: app-token
+        uses: actions/create-github-app-token@64ab729a6294000f5aa4a4bc0b73d1f32bc45510 # v3.3.0
+        with:
+          app-id: ${{ secrets.RENOVATE_APP_ID }}
+          private-key: ${{ secrets.RENOVATE_APP_PRIVATE_KEY }}
+
+      - name: Check out runner repo
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          token: ${{ steps.app-token.outputs.token }}
+
+      - name: Run Renovate
+        uses: renovatebot/github-action@2804199d260ad00c1fae0e9e842888369391c776 # v46.3.10
+        with:
+          configurationFile: renovate-config.js
+          token: ${{ steps.app-token.outputs.token }}
+        env:
+          LOG_LEVEL: info
