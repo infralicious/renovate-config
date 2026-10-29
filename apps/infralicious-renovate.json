@@ -1,0 +1,19 @@
+{
+  "name": "infralicious-renovate",
+  "url": "https://github.com/infralicious/renovate-config",
+  "description": "Central Renovate runner for infralicious, run as a GitHub Action",
+  "public": false,
+  "hook_attributes": {
+    "active": false
+  },
+  "redirect_url": "https://github.com/infralicious/renovate-config",
+  "default_permissions": {
+    "contents": "write",
+    "issues": "write",
+    "metadata": "read",
+    "pull_requests": "write",
+    "vulnerability_alerts": "read",
+    "workflows": "write"
+  },
+  "default_events": []
+}
