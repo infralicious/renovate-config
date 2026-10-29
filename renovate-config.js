@@ -35,7 +35,7 @@ module.exports = {
   // Limit concurrent PRs on the first org-wide run.
   prConcurrentLimit: 5,
 
-  // Test mode only. Active for the .github dry run.
+  // Test mode only. Uncomment this line for a dry run.
   // It logs planned updates and opens no PRs.
-  dryRun: "lookup",
+  // dryRun: "lookup",
 };
