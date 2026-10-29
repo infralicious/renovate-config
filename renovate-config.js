@@ -7,7 +7,7 @@ module.exports = {
   // Run Renovate on org repos only.
   platform: "github",
   autodiscover: true,
-  autodiscoverFilter: ["infralicious/*"],
+  autodiscoverFilter: ["infralicious/infralicious.github.io"],
 
   // Skip onboarding PRs in target repos.
   // The runner config acts as the base config.
@@ -35,7 +35,7 @@ module.exports = {
   // Limit concurrent PRs on the first org-wide run.
   prConcurrentLimit: 5,
 
-  // Test mode only. Active for the org survey dry run.
+  // Test mode only. Uncomment this line for a dry run.
   // It logs planned updates and opens no PRs.
-  dryRun: "lookup",
+  // dryRun: "lookup",
 };
