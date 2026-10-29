@@ -7,7 +7,7 @@ module.exports = {
   // Run Renovate on org repos only.
   platform: "github",
   autodiscover: true,
-  autodiscoverFilter: ["infralicious/infralicious.github.io"],
+  autodiscoverFilter: ["infralicious/.github"],
 
   // Skip onboarding PRs in target repos.
   // The runner config acts as the base config.
