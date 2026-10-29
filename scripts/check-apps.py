@@ -49,12 +49,13 @@ def make_jwt(app_id, private_key):
     )
     signing_input = header + "." + payload
     key_file = tempfile.NamedTemporaryFile(mode="w", delete=False)
+    key_path = key_file.name
     try:
         key_file.write(private_key)
         key_file.close()
-        os.chmod(key_file.name, 0o600)
+        os.chmod(key_path, 0o600)
         result = subprocess.run(
-            ["openssl", "dgst", "-sha256", "-sign", key_file.name],
+            ["openssl", "dgst", "-sha256", "-sign", key_path],
             input=signing_input.encode(),
             stdout=subprocess.PIPE,
             stderr=subprocess.PIPE,
@@ -64,7 +65,8 @@ def make_jwt(app_id, private_key):
             raise RuntimeError("openssl sign failed")
         signature = base64url(result.stdout)
     finally:
-        os.unlink(key_file.name)
+        if os.path.exists(key_path):
+            os.unlink(key_path)
     return signing_input + "." + signature
 
 
@@ -81,8 +83,15 @@ def fetch_json(url, token):
 
 def compare_live(slug, expected_permissions, expected_events, live):
     """Compare live permissions and events to a manifest. Return True on match."""
-    live_permissions = live.get("permissions", {})
-    live_events = live.get("events", [])
+    if not isinstance(live, dict):
+        print(f"FAIL: {slug} live data is not an object")
+        return False
+    live_permissions = live.get("permissions") or {}
+    if not isinstance(live_permissions, dict):
+        live_permissions = {}
+    live_events = live.get("events") or []
+    if not isinstance(live_events, list):
+        live_events = []
     failed = False
     missing = sorted(set(expected_permissions) - set(live_permissions))
     extra = sorted(set(live_permissions) - set(expected_permissions))
@@ -117,8 +126,15 @@ def compare_live(slug, expected_permissions, expected_events, live):
 
 def load_manifest(path):
     """Load one manifest file, and validate its permission fields."""
-    with open(path, encoding="utf-8") as handle:
-        manifest = json.load(handle)
+    try:
+        with open(path, encoding="utf-8") as handle:
+            manifest = json.load(handle)
+    except (OSError, ValueError) as error:
+        print(f"FAIL: {path} cannot be read as JSON: {error}")
+        return None
+    if not isinstance(manifest, dict):
+        print(f"FAIL: {path} is not a JSON object")
+        return None
     slug = manifest.get("name")
     expected_permissions = manifest.get("default_permissions")
     expected_events = manifest.get("default_events")
@@ -148,6 +164,9 @@ def check_app_mode(path, api_base, token):
     except urllib.error.URLError as error:
         print(f"FAIL: {slug} fetch failed: {error.reason}")
         return False
+    except ValueError as error:
+        print(f"FAIL: {slug} fetch returned bad data: {error}")
+        return False
     return compare_live(slug, expected_permissions, expected_events, live)
 
 
@@ -170,6 +189,9 @@ def check_jwt_mode(path, api_base):
         return False
     except urllib.error.URLError as error:
         print(f"FAIL: {slug} fetch failed: {error.reason}")
+        return False
+    except ValueError as error:
+        print(f"FAIL: {slug} fetch returned bad data: {error}")
         return False
     except (RuntimeError, OSError) as error:
         print(f"FAIL: {slug} JWT failed: {error}")
@@ -220,9 +242,13 @@ def main():
     if not token:
         print("FAIL: GITHUB_TOKEN is not set, private Apps need a token")
         return 1
-    paths = sorted(
-        path for path in os.listdir(args.apps_dir) if path.endswith(".json")
-    )
+    try:
+        paths = sorted(
+            path for path in os.listdir(args.apps_dir) if path.endswith(".json")
+        )
+    except OSError as error:
+        print(f"FAIL: cannot list {args.apps_dir}: {error}")
+        return 1
     if not paths:
         print(f"FAIL: no manifest files in {args.apps_dir}")
         return 1

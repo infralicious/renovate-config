@@ -1,0 +1,15 @@
+name: Script Tests
+on:
+  pull_request:
+    branches: [main]
+jobs:
+  scriptTests:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - name: Check App drift script compiles
+        run: python3 -m py_compile scripts/check-apps.py
+      - name: Run App drift unit tests, no dependency
+        run: python3 scripts/check-apps.test.py
