@@ -29,6 +29,10 @@ jobs:
         with:
           app-id: ${{ secrets.RENOVATE_APP_ID }}
           private-key: ${{ secrets.RENOVATE_APP_PRIVATE_KEY }}
+          # Owner without repositories scopes the token to all repos
+          # in the owner's installation. Without it, the token covers
+          # only this runner repo, and autodiscover finds no targets.
+          owner: infralicious
 
       - name: Check out runner repo
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
