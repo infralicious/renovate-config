@@ -4,9 +4,9 @@ on:
     branches: [main]
   workflow_dispatch:
   schedule:
-    # Run weekly, on Monday at 09:00 UTC.
+    # Run on business days, Monday to Friday at 09:00 UTC.
     # That time catches live UI drift, with no manifest change.
-    - cron: "0 9 * * 1"
+    - cron: "0 9 * * 1-5"
 jobs:
   appDrift:
     runs-on: ubuntu-latest

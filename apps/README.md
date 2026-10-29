@@ -11,7 +11,7 @@ The drift check compares the live App to this manifest.
 It checks permissions and events only.
 It does not check name, URL, description, or webhook settings.
 It runs on every pull request to main.
-It runs weekly, on Monday at 09:00 UTC.
+It runs on business days, Monday to Friday at 09:00 UTC.
 It runs on manual dispatch, at any time.
 It never changes the live App, it only reports drift.
 It fails when live permissions differ from the manifest.
