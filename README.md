@@ -5,6 +5,11 @@
 This repo holds the shared Renovate preset in default.json.
 Target repos extend it with local>infralicious/renovate-config.
 A target repo config still wins on overlap.
+The preset uses Chicago time, and it delays releases by 7 days.
+Security alerts bypass that delay, and they open at once.
+GitHub Actions non-major updates group into one PR per repo.
+Major updates stay separate, and pre-commit updates group on their own.
+PRs rebase only on conflict, and age-confidence badges aid review.
 
 ## Central runner
 

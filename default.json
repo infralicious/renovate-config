@@ -2,13 +2,17 @@
   "$schema": "https://docs.renovatebot.com/renovate-schema.json",
   "extends": [
     "config:best-practices",
+    "mergeConfidence:age-confidence-badges",
     ":separateMultipleMajorReleases",
     ":semanticCommits",
     ":semanticCommitTypeAll(ci)",
     ":enablePreCommit",
     "schedule:daily"
   ],
-  "timezone": "America/Los_Angeles",
+  "timezone": "America/Chicago",
+  "minimumReleaseAge": "7 days",
+  "minimumReleaseAgeBehaviour": "timestamp-optional",
+  "rebaseWhen": "conflicted",
   "commitMessageSuffix": " in {{packageFile}}",
   "dependencyDashboardAutoclose": false,
   "configMigration": true,
@@ -22,15 +26,26 @@
       "matchManagers": [
         "pre-commit"
       ],
-      "groupName": "pre-commit",
-      "schedule": [
-        "after 4am on monday"
-      ]
+      "groupName": "pre-commit"
     },
+    {
+      "matchManagers": [
+        "github-actions"
+      ],
+      "groupName": "github-actions",
+      "matchUpdateTypes": [
+        "minor",
+        "patch",
+        "digest",
+        "pin",
+        "pinDigest"
+      ]
+    }
   ],
   "osvVulnerabilityAlerts": true,
   "vulnerabilityAlerts": {
     "enabled": true,
+    "minimumReleaseAge": null,
     "assignees": [
       "@nitrocode"
     ],
