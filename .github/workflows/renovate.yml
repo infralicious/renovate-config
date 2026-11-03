@@ -1,6 +1,5 @@
 # Central Renovate runner for the infralicious org.
 # This workflow lives in infralicious/renovate-config only.
-# That repo has no workflows folder today, so no clash exists.
 # It opens PRs in target repos. It adds no file to them.
 name: Renovate
 
@@ -22,6 +21,7 @@ concurrency:
 jobs:
   renovate:
     runs-on: ubuntu-latest
+    timeout-minutes: 30
     steps:
       - name: Create app token
         id: app-token
@@ -33,6 +33,16 @@ jobs:
           # in the owner's installation. Without it, the token covers
           # only this runner repo, and autodiscover finds no targets.
           owner: infralicious
+          # Pin the token to the App permissions Renovate needs.
+          # A permission not listed here is set to none.
+          # A future App permission does not flow to this token
+          # until this list is updated on purpose.
+          permission-contents: write
+          permission-issues: write
+          permission-metadata: read
+          permission-pull-requests: write
+          permission-vulnerability-alerts: read
+          permission-workflows: write
 
       - name: Check out runner repo
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
